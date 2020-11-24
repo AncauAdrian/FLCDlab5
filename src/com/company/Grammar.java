@@ -5,24 +5,22 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Grammar {
-    private final List<String> nonTerminals = new LinkedList<>();
-    private final List<String> terminals = new LinkedList<>();
-    private final HashMap<String, List<String>> productions = new HashMap<>();
-    private String startingSymbol;
+    public final Set<String> nonTerminals = new HashSet<>();
+    public final Set<String> terminals = new HashSet<>();
+    public final HashMap<String, List<String>> productions = new HashMap<>(); //Map<Symbol,List of productions>
+    public String startingSymbol;
 
     private void readFromFile(String path) {
         try {
             File file = new File(path);
             Scanner reader = new Scanner(file);
 
-            String line = reader.nextLine();
-
             // non terminals are on the first line, separated by comma
-            nonTerminals.addAll(Arrays.asList(line.split(",")));
+            String line = reader.nextLine();
+            String[] terms=line.split(",");
+            startingSymbol=terms[0];
+            nonTerminals.addAll(Arrays.asList(terms));
             line = reader.nextLine().replaceAll("\\s", "");
-
-            startingSymbol = nonTerminals.get(0);
-
             // terminals are on the second line, separated by comma
             terminals.addAll(Arrays.asList(line.split(",")));
 
@@ -32,15 +30,55 @@ public class Grammar {
                 String[] components = line.split("[>|]");
                 List<String> list = new LinkedList<>(Arrays.asList(components));
                 list.remove(0);
-
                 productions.put(components[0], list);
             }
-
-
             reader.close();
         } catch (FileNotFoundException e) {
             System.out.println("Could not open file: " + path);
             e.printStackTrace();
+        }
+    }
+    public Grammar Enhance(){
+        //not yet
+        return this;
+    }
+    public void printMenu(){
+        Scanner scan = new Scanner(System.in);
+        while(true){
+            System.out.println("0.Terminate | 1.Nonterminals| 2.Terminals | 3.Productions | 4.Production for nonterminal");
+            int x=scan.nextInt();
+            switch(x){
+                case 0:
+                    scan.close();
+                    return;
+                case 1:
+                    System.out.println(nonTerminals.toString());
+                    break;
+                case 2:
+                    System.out.println(terminals.toString());
+                    break;
+                case 3:
+                    productions.forEach((key, value) ->{
+                        String res=key+"->";
+                        for (String prod:value) {
+                            res=res+prod+"|";
+                        };
+                        System.out.println(res.substring(0,res.length()-1));
+                    });
+                    break;
+                case 4:
+                    scan.nextLine();
+                    String nonterminal=scan.nextLine().strip();
+                    if(!productions.containsKey(nonterminal)){
+                        System.out.println("Not a nonterminal");
+                        break;
+                    }
+                    String res=nonterminal+"->";
+                    for (String prod:productions.get(nonterminal))
+                            res=res+prod+"|";
+                    System.out.println(res.substring(0,res.length()-1));
+                    break;
+            }
         }
     }
 }
