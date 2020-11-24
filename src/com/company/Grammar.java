@@ -7,7 +7,7 @@ import java.util.*;
 public class Grammar {
     public final Set<String> nonTerminals = new HashSet<>();
     public final Set<String> terminals = new HashSet<>();
-    public final HashMap<String, List<String>> productions = new HashMap<>(); //Map<Symbol,List of productions>
+    public final HashMap<String, Set<String>> productions = new HashMap<>(); //Map<Symbol,List of productions>
     public String startingSymbol;
 
     private void readFromFile(String path) {
@@ -28,8 +28,8 @@ public class Grammar {
             while(reader.hasNextLine()) {
                 line = reader.nextLine().replaceAll("\\s", "");
                 String[] components = line.split("[>|]");
-                List<String> list = new LinkedList<>(Arrays.asList(components));
-                list.remove(0);
+                Set<String> list = new HashSet<>(Arrays.asList(components));
+                list.remove(components[0]);
                 productions.put(components[0], list);
             }
             reader.close();
