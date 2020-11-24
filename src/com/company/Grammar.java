@@ -10,16 +10,17 @@ public class Grammar {
     public final HashMap<String, Set<String>> productions = new HashMap<>(); //Map<Symbol,List of productions>
     public String startingSymbol;
 
-    private void readFromFile(String path) {
+    public void readFromFile(String path) {
         try {
             File file = new File(path);
             Scanner reader = new Scanner(file);
 
             // non terminals are on the first line, separated by comma
             String line = reader.nextLine();
-            String[] terms=line.split(",");
-            startingSymbol=terms[0];
+            String[] terms = line.split(",");
+            startingSymbol = terms[0];
             nonTerminals.addAll(Arrays.asList(terms));
+
             line = reader.nextLine().replaceAll("\\s", "");
             // terminals are on the second line, separated by comma
             terminals.addAll(Arrays.asList(line.split(",")));
@@ -27,9 +28,14 @@ public class Grammar {
             // Read productions
             while(reader.hasNextLine()) {
                 line = reader.nextLine().replaceAll("\\s", "");
-                String[] components = line.split("[>|]");
-                Set<String> list = new HashSet<>(Arrays.asList(components));
-                list.remove(components[0]);
+                String[] components = line.split("[:|]");
+                Set<String> list = new HashSet<>();
+
+                for (String component : components) {
+                    if(!component.equals(components[0]))
+                        list.add(component);
+                }
+
                 productions.put(components[0], list);
             }
             reader.close();
@@ -38,10 +44,12 @@ public class Grammar {
             e.printStackTrace();
         }
     }
+
     public Grammar Enhance(){
         //not yet
         return this;
     }
+
     public void printMenu(){
         Scanner scan = new Scanner(System.in);
         while(true){
