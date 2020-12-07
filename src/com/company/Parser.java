@@ -1,49 +1,75 @@
-//package com.company;
-//
-//import java.util.HashSet;
-//import java.util.List;
-//import java.util.Set;
-//
-////---WARNING---
-////EXTREMELY SENSELESS CODE AHEAD
-////basically just structure guidance to make completing it faster once i understand the algorithms
-//public class Parser {
-//    private Object closure(List<Object> items,Grammar g) {
-//        C=items;
-//        boolean changed=true;
-//        while(changed){
-//            changed=false;
-//            for(somekindofitem in C)
-//                for({B->y} in P)
-//                    if(!C.contains(B-item)){
-//                        changed=true;
-//                        C.add(B-item);
-//                    }
-//        }
-//        return c;
-//    }
-//
-//    public void goTo(Object state,Object X) {
-//        return closure(something);
-//    }
-//
-//    public void canonicalCollection(Grammar g) {
-//        Set<Object> C=new HashSet<Object>();
-//        List<Object> s0=closure(g.productions.get(g.startingSymbol));
-//        s0.forEach(prod->C.add(prod));
-//        boolean changed=true;
-//        while(changed){
-//            changed=false;
-//            for(s in C)
-//                for(X in N and E){
-//                    res=goTo(s,X);
-//                    if(res.size>0&&!C.contains(res)){
-//                        changed=true;
-//                        C.add(res);
-//                    }
-//            }
-//        }
-//
-//    }
-//
-//}
+package com.company;
+
+import java.util.*;
+
+public class Parser {
+    private static Set<Item> closure(Set<Item> items,Grammar g) {
+        Set<Item> C = new HashSet<>(items);
+        Set<Item> visited=new HashSet<>();
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (Item itm : C) {
+                if(!visited.contains(itm)){
+                    visited.add(itm);
+                    int pos = itm.dotPos + 1;
+                    if (pos < itm.prod.size()) {
+                        String symbol = itm.prod.get(itm.dotPos + 1);
+                        for (String production : g.productions.get(symbol)) {
+                            Item newItm = new Item(g, symbol, production);
+                            if (!C.contains(newItm)) {
+                                changed = true;
+                                C.add(newItm);
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        return C;
+    }
+
+    public static Set<Item> goTo(Set<Item> state,String X,Grammar g) {
+        Set<Item> s=new HashSet<>();
+        state.forEach(item -> {
+            if(X.equals(item.afterDot()))
+                s.add(item.incrementDot());
+        });
+        if(s.isEmpty())
+            return null;
+        return closure(s,g);
+    }
+
+    public static List<Set<Item>> canonicalCollection(Grammar g) {
+        List<Set<Item>> C=new ArrayList<>();
+        Set<Item> s0 = new HashSet<>(closure(new HashSet<>(Collections.singletonList(new Item(g, g.startingSymbol, g.getProd(g.startingSymbol).iterator().next()))), g));
+        C.add(s0);
+        int At=0,lastAt=-1;
+        while(At!=lastAt){
+            lastAt=At;
+            int startsize=C.size();
+            for(int i=lastAt;i<startsize;i++){
+                Set<Item> s=C.get(i);
+                for (String X:g.nonTerminals) {
+                    Set<Item> res=goTo(s,X,g);
+                    if(res!=null&&!C.contains(res)){
+                        At++;
+                        C.add(res);
+                }
+            }
+                for (String X:g.terminals) {
+                    Set<Item> res=goTo(s,X,g);
+                    if(res!=null&&!C.contains(res)){
+                        At++;
+                        C.add(res);
+                    }
+                }
+            }
+        }
+        return C;
+
+    }
+
+}
+

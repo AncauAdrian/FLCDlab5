@@ -44,9 +44,14 @@ public class Grammar {
             e.printStackTrace();
         }
     }
-
+    public Set<String> getProd(String elem){
+        return productions.get(elem);
+    }
     public Grammar Enhance(){
-        //not yet
+        Set<String> prod=new HashSet<>();
+        prod.add(startingSymbol);
+        startingSymbol=startingSymbol+"'";
+        productions.put(startingSymbol,prod);
         return this;
     }
 
