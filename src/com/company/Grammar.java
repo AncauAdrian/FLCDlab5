@@ -1,5 +1,7 @@
 package com.company;
 
+import javafx.util.Pair;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -7,7 +9,7 @@ import java.util.*;
 public class Grammar {
     public final Set<String> nonTerminals = new HashSet<>();
     public final Set<String> terminals = new HashSet<>();
-    public final HashMap<String, Set<String>> productions = new HashMap<>(); //Map<Symbol,List of productions>
+    public final HashMap<String, Set<Pair<Integer,String>>> productions = new HashMap<>(); //Map<Symbol,List of productions(prod string and nr)>
     public String startingSymbol;
 
     public void readFromFile(String path) {
@@ -26,14 +28,16 @@ public class Grammar {
             terminals.addAll(Arrays.asList(line.split(",")));
 
             // Read productions
+            int prodNR=2;
             while(reader.hasNextLine()) {
+
                 line = reader.nextLine().replaceAll("\\s", "");
                 String[] components = line.split("[:|]");
-                Set<String> list = new HashSet<>();
+                Set<Pair<Integer,String>> list = new HashSet<>();
 
                 for (String component : components) {
-                    if(!component.equals(components[0]))
-                        list.add(component);
+                    if(!component.equals(components[0])){
+                        list.add(new Pair<>(prodNR,component));prodNR++;}
                 }
 
                 productions.put(components[0], list);
@@ -44,13 +48,14 @@ public class Grammar {
             e.printStackTrace();
         }
     }
-    public Set<String> getProd(String elem){
+    public Set<Pair<Integer,String>> getProd(String elem){
         return productions.get(elem);
     }
     public Grammar Enhance(){
-        Set<String> prod=new HashSet<>();
-        prod.add(startingSymbol);
+        Set<Pair<Integer,String>> prod=new HashSet<>();
+        prod.add(new Pair<>(1,startingSymbol));
         startingSymbol=startingSymbol+"'";
+        nonTerminals.add(startingSymbol);
         productions.put(startingSymbol,prod);
         return this;
     }
@@ -73,8 +78,8 @@ public class Grammar {
                 case 3:
                     productions.forEach((key, value) ->{
                         String res=key+"->";
-                        for (String prod:value) {
-                            res=res+prod+"|";
+                        for (Pair<Integer,String> prod:value) {
+                            res=res+"("+prod.getKey()+")"+prod.getValue()+"|";
                         };
                         System.out.println(res.substring(0,res.length()-1));
                     });
@@ -82,16 +87,17 @@ public class Grammar {
                 case 4:
                     scan.nextLine();
                     String nonterminal=scan.nextLine().strip();
-                    if(!productions.containsKey(nonterminal)){
+                    if(!nonTerminals.contains(nonterminal)){
                         System.out.println("Not a nonterminal");
                         break;
                     }
                     String res=nonterminal+"->";
-                    for (String prod:productions.get(nonterminal))
-                            res=res+prod+"|";
+                    for (Pair<Integer,String> prod:productions.get(nonterminal))
+                            res=res+"("+prod.getKey()+")"+prod.getValue()+"|";
                     System.out.println(res.substring(0,res.length()-1));
                     break;
             }
         }
     }
+
 }

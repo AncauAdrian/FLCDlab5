@@ -1,5 +1,7 @@
 package com.company;
 
+import javafx.util.Pair;
+
 import java.util.*;
 
 public class Parser {
@@ -9,17 +11,21 @@ public class Parser {
         boolean changed = true;
         while (changed) {
             changed = false;
-            for (Item itm : C) {
+            Set<Item> C1 = new HashSet<>(items);
+            C1.removeAll(visited); //foreach on C breaks for g2 |ConcurrentModificationException|
+            for (Item itm : C1) {
                 if(!visited.contains(itm)){
                     visited.add(itm);
                     int pos = itm.dotPos + 1;
                     if (pos < itm.prod.size()) {
                         String symbol = itm.prod.get(itm.dotPos + 1);
-                        for (String production : g.productions.get(symbol)) {
-                            Item newItm = new Item(g, symbol, production);
-                            if (!C.contains(newItm)) {
-                                changed = true;
-                                C.add(newItm);
+                        if(g.productions.get(symbol)!=null){
+                            for (Pair<Integer,String> production : g.productions.get(symbol)) {
+                                Item newItm = new Item(g, symbol, production.getValue(),production.getKey());
+                                if (!C.contains(newItm)) {
+                                    changed = true;
+                                    C.add(newItm);
+                                }
                             }
                         }
 
@@ -43,7 +49,7 @@ public class Parser {
 
     public static List<Set<Item>> canonicalCollection(Grammar g) {
         List<Set<Item>> C=new ArrayList<>();
-        Set<Item> s0 = new HashSet<>(closure(new HashSet<>(Collections.singletonList(new Item(g, g.startingSymbol, g.getProd(g.startingSymbol).iterator().next()))), g));
+        Set<Item> s0 = new HashSet<>(closure(new HashSet<>(Collections.singletonList(new Item(g, g.startingSymbol, g.getProd(g.startingSymbol).iterator().next().getValue(),1))), g));
         C.add(s0);
         int At=0,lastAt=-1;
         while(At!=lastAt){

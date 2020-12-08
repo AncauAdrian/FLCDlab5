@@ -1,5 +1,7 @@
 package com.company;
 
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,20 +11,23 @@ public class Item {
     public String start;
     public List<String> prod;
     public Integer dotPos;
+    public Integer prodNR;
     private static final String dot=".";
-    public Item(Grammar gr,String startsymbol,List<String> prodOUT,Integer dot){
+    public Item(Grammar gr,String startsymbol,List<String> prodOUT,Integer productionNR,Integer dot){
         g=gr;
         start=startsymbol;
         dotPos=dot;
         prod=prodOUT;
+        prodNR=productionNR;
     }
-    public Item(Grammar gr,String startsymbol,String productionOUT){
+    public Item(Grammar gr, String startsymbol,String productionOUT,Integer productionNR){
         g=gr;
         if(!g.nonTerminals.contains(startsymbol) && !g.terminals.contains(startsymbol))
             throw new Error("Symbol does not match grammar: "+startsymbol);
         start=startsymbol;
         dotPos=0;
         prod=new ArrayList<String>();
+        prodNR=productionNR;
         prod.add(dot);
         productionOUT=productionOUT.strip();
         while(productionOUT.length()>0){
@@ -38,7 +43,7 @@ public class Item {
         copyprod.addAll(prod);
         copyprod.remove(dot);
         copyprod.add(dotPos+1,dot);
-        return new Item(g,start,copyprod,dotPos+1);
+        return new Item(g,start,copyprod,prodNR,dotPos+1);
     }
     public Item moveDotAfter(String symbol){
         int pos=prod.indexOf(symbol);
@@ -48,7 +53,7 @@ public class Item {
         copyprod.addAll(prod);
         copyprod.remove(dot);
         copyprod.add(pos,dot);
-        return new Item(g,start,copyprod,pos);
+        return new Item(g,start,copyprod,prodNR,pos);
     }
     public String afterDot(){
         if(dotPos==prod.size()-1)
@@ -56,15 +61,26 @@ public class Item {
         return prod.get(dotPos+1);
     }
     private String nextSymbol(String prod) {
-        String res = "";
+//        String res = "";
+//        int index = 0;
+//        while (index < prod.length()) {
+//            res += prod.charAt(index);
+//            if (g.nonTerminals.contains(res) || g.terminals.contains(res))
+//                return res;
+//            index++;
+//        }
+//        throw new Error("Symbol does not match grammar: "+prod);
+        String res = "",lastfound=null;
         int index = 0;
         while (index < prod.length()) {
             res += prod.charAt(index);
             if (g.nonTerminals.contains(res) || g.terminals.contains(res))
-                return res;
+                lastfound=res;
             index++;
         }
-        throw new Error("Symbol does not match grammar: "+prod);
+        if(lastfound==null)
+            throw new Error("Symbol does not match grammar: "+prod);
+        return lastfound;
     }
 
     @Override
@@ -82,11 +98,10 @@ public class Item {
 
     @Override
     public String toString() {
-        return "Item{" +
-                "g=" + g +
-                ", start='" + start + '\'' +
-                ", prod=" + prod +
-                ", dotPos=" + dotPos +
-                '}';
+        String str="("+prodNR+")"+"["+start+"->";
+        for (String elem:prod) {
+            str=str+elem;
+        }
+        return str+"]";
     }
 }
