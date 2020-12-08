@@ -28,7 +28,7 @@ public class Grammar {
             terminals.addAll(Arrays.asList(line.split(",")));
 
             // Read productions
-            int prodNR=2;
+            int prodNR=1;
             while(reader.hasNextLine()) {
 
                 line = reader.nextLine().replaceAll("\\s", "");
@@ -53,7 +53,7 @@ public class Grammar {
     }
     public Grammar Enhance(){
         Set<Pair<Integer,String>> prod=new HashSet<>();
-        prod.add(new Pair<>(1,startingSymbol));
+        prod.add(new Pair<>(0,startingSymbol));
         startingSymbol=startingSymbol+"'";
         nonTerminals.add(startingSymbol);
         productions.put(startingSymbol,prod);

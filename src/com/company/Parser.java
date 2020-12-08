@@ -56,6 +56,7 @@ public class Parser {
             lastAt=At;
             int startsize=C.size();
             for(int i=lastAt;i<startsize;i++){
+                System.out.println(lastAt+","+startsize);
                 Set<Item> s=C.get(i);
                 for (String X:g.nonTerminals) {
                     Set<Item> res=goTo(s,X,g);
@@ -72,10 +73,16 @@ public class Parser {
                     }
                 }
             }
+            At=startsize;
         }
         return C;
 
     }
-
+    public List<Integer> fullparse(Grammar g,List<String> w){
+        return parse(g,w,new LRtable(canonicalCollection(g),g));
+    }
+    public List<Integer> parse(Grammar g,List<String> w,LRtable table){
+        return null;
+    }
 }
 

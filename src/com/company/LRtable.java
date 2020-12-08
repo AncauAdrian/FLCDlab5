@@ -64,7 +64,7 @@ public class LRtable {
         }
     }
     public void printTable(){
-        Map map=Map.of(acc,"acc",shift,"shift",err,"err");
+        Map map=Map.of(acc,"acc",shift,"shift",err,"-");
         String actionrow="actions:";
         for(int i=0;i<states.size();i++){
             System.out.println("s"+i+":"+states.get(i));
@@ -90,7 +90,7 @@ public class LRtable {
                 if(map.containsKey(state.get(X)))
                     row+=map.get(state.get(X))+" | ";
                 else
-                    row+=state.get(X)+" | ";
+                    row+="s"+state.get(X)+" | ";
             };
             System.out.println(row);
         }
