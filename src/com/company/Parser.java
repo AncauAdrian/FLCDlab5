@@ -1,7 +1,5 @@
 package com.company;
 
-import javafx.util.Pair;
-
 import java.util.*;
 
 public class Parser {
@@ -21,7 +19,7 @@ public class Parser {
                         String symbol = itm.prod.get(itm.dotPos + 1);
                         if(g.productions.get(symbol)!=null){
                             for (Pair<Integer,String> production : g.productions.get(symbol)) {
-                                Item newItm = new Item(g, symbol, production.getValue(),production.getKey());
+                                Item newItm = new Item(g, symbol, production.second,production.first);
                                 if (!C.contains(newItm)) {
                                     changed = true;
                                     C.add(newItm);
@@ -49,7 +47,7 @@ public class Parser {
 
     public static List<Set<Item>> canonicalCollection(Grammar g) {
         List<Set<Item>> C=new ArrayList<>();
-        Set<Item> s0 = new HashSet<>(closure(new HashSet<>(Collections.singletonList(new Item(g, g.startingSymbol, g.getProd(g.startingSymbol).iterator().next().getValue(),1))), g));
+        Set<Item> s0 = new HashSet<>(closure(new HashSet<>(Collections.singletonList(new Item(g, g.startingSymbol, g.getProd(g.startingSymbol).iterator().next().second,1))), g));
         C.add(s0);
         int At=0,lastAt=-1;
         while(At!=lastAt){
