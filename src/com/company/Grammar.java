@@ -2,14 +2,23 @@ package com.company;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class Grammar {
     public final Set<String> nonTerminals = new HashSet<>();
     public final Set<String> terminals = new HashSet<>();
-    public final HashMap<String, Set<Pair<Integer,String>>> productions = new HashMap<>(); //Map<Symbol,List of productions(prod string and nr)>
+    public final Map<String, Set<Pair<Integer,String>>> productions = new HashMap<>(); //Map<Symbol,List of productions(prod string and nr)>
     public String startingSymbol;
-
+    public Pair<String,String> productionByNR(int i){
+        for(Map.Entry<String, Set<Pair<Integer,String>>> entry:productions.entrySet()){
+            for(Pair<Integer,String> production:entry.getValue()){
+                if(production.first==i)
+                    return new Pair<>(entry.getKey(),production.second);
+            }
+        }
+        return null;
+    }
     public void readFromFile(String path) {
         try {
             File file = new File(path);

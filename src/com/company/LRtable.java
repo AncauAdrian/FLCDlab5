@@ -7,14 +7,23 @@ public class LRtable {
     static final Integer shift=-1;
     static final Integer acc=-2;
     static final Integer err=-3;
-    private List<Map<String,Integer>> table;
-    private List<Set<Item>> states;
+    public List<Map<String,Integer>> table;
+    public List<Set<Item>> states;
     private Grammar g;
+    public static boolean reduce(int code){
+        return code>=0;
+    }
     public LRtable(List<Set<Item>> states,Grammar g){
         this.states=states;
         this.g=g;
         table=new ArrayList<>();
         setup();
+    }
+    public Integer action(int state){
+        return table.get(state).get(actionstr);
+    }
+    public Integer goTo(int state,String X){
+        return table.get(state).get(X);
     }
     private void setup(){
         for(int i=0;i<states.size();i++){

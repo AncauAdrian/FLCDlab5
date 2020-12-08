@@ -54,7 +54,6 @@ public class Parser {
             lastAt=At;
             int startsize=C.size();
             for(int i=lastAt;i<startsize;i++){
-                System.out.println(lastAt+","+startsize);
                 Set<Item> s=C.get(i);
                 for (String X:g.nonTerminals) {
                     Set<Item> res=goTo(s,X,g);
@@ -76,11 +75,44 @@ public class Parser {
         return C;
 
     }
-    public List<Integer> fullparse(Grammar g,List<String> w){
+    public static List<Integer> fullparse(Grammar g,List<String> w){
         return parse(g,w,new LRtable(canonicalCollection(g),g));
     }
-    public List<Integer> parse(Grammar g,List<String> w,LRtable table){
-        return null;
+    public static List<Integer> parse(Grammar g,List<String> beta,LRtable table){
+        Stack<Object> alpha=new Stack<>();
+        List<Integer> pi=new ArrayList<>();
+        alpha.push(0);
+        int state=0;
+        while (true){
+            if(table.action(state).equals(LRtable.shift)){
+                String a=beta.remove(0);
+                state=table.goTo(state,a);
+                alpha.push(a);
+                alpha.push(state);
+            }
+            else{
+                if(LRtable.reduce(table.action(state))){
+                    Pair<String,String> res=g.productionByNR(table.action(state)); //<lhp,rhp>
+                    String pop="";
+                    while(!pop.equals(res.second)){
+                        alpha.pop();
+                        pop=alpha.pop()+pop;
+                    }
+                    pi.add(0,table.action(state));
+                    System.out.println("reduce statemove:"+state+"->"+table.goTo((Integer)alpha.peek(),res.first));
+                    state=table.goTo((Integer)alpha.peek(),res.first);
+                    alpha.push(res.first);
+                    alpha.push(state);
+                }else{
+                    if(table.action(state).equals(LRtable.acc))
+                        return pi;
+                    if(table.action(state).equals(LRtable.err)){
+                        throw new Error("Parsing error:"+beta);
+                    }
+                }
+            }
+        }
     }
 }
 
+//alpha working stack(Pair(symbol,state)) beta(w) output stack pi output
