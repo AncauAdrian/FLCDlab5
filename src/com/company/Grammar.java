@@ -1,7 +1,5 @@
 package com.company;
 
-import javafx.util.Pair;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -79,7 +77,7 @@ public class Grammar {
                     productions.forEach((key, value) ->{
                         String res=key+"->";
                         for (Pair<Integer,String> prod:value) {
-                            res=res+"("+prod.getKey()+")"+prod.getValue()+"|";
+                            res=res+"("+prod.first+")"+prod.second+"|";
                         };
                         System.out.println(res.substring(0,res.length()-1));
                     });
@@ -93,7 +91,7 @@ public class Grammar {
                     }
                     String res=nonterminal+"->";
                     for (Pair<Integer,String> prod:productions.get(nonterminal))
-                            res=res+"("+prod.getKey()+")"+prod.getValue()+"|";
+                            res=res+"("+prod.first+")"+prod.second+"|";
                     System.out.println(res.substring(0,res.length()-1));
                     break;
             }
