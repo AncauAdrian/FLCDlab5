@@ -82,9 +82,17 @@ public class Parser {
         Stack<Object> alpha=new Stack<>();
         List<Integer> pi=new ArrayList<>();
         alpha.push(0);
-        int state=0;
+        Integer state=0;
         while (true){
+            if(state.equals(LRtable.err)){
+                throw new Error("Parsing error [Last Config alpha:"+alpha+"beta:"+beta+"pi"+pi+"]");
+            }
+            if(table.action(state).equals(LRtable.acc))
+                return pi;
+            System.out.println("Current config:"+alpha+beta+pi);
             if(table.action(state).equals(LRtable.shift)){
+                if(beta.isEmpty())
+                    throw new Error("Parsing error [Last Config alpha:"+alpha+"beta:"+beta+"pi"+pi+"]");
                 String a=beta.remove(0);
                 state=table.goTo(state,a);
                 alpha.push(a);
@@ -99,16 +107,9 @@ public class Parser {
                         pop=alpha.pop()+pop;
                     }
                     pi.add(0,table.action(state));
-                    System.out.println("reduce statemove:"+state+"->"+table.goTo((Integer)alpha.peek(),res.first));
                     state=table.goTo((Integer)alpha.peek(),res.first);
                     alpha.push(res.first);
                     alpha.push(state);
-                }else{
-                    if(table.action(state).equals(LRtable.acc))
-                        return pi;
-                    if(table.action(state).equals(LRtable.err)){
-                        throw new Error("Parsing error:"+beta);
-                    }
                 }
             }
         }
