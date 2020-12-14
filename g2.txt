@@ -1,8 +1,8 @@
 program,declaration,stmt,type,type1,assignstmt
-{,},;,main,BOOLEAN,INTEGER,",STRING,",noconst,IDENTIFIER,=
+{,},;,main,BOOLEAN,integer,",STRING,",CONST,IDENTIFIER,=
 program:main{declaration;stmt;}
 declaration:typeIDENTIFIER
 type:type1
-type1:BOOLEAN|INTEGER|"STRING"
+type1:BOOLEAN|integer|STRING
 stmt:assignstmt
-assignstmt:IDENTIFIER=noconst
+assignstmt:ID=CONST
