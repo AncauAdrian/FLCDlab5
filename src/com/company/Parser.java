@@ -9,7 +9,7 @@ public class Parser {
         boolean changed = true;
         while (changed) {
             changed = false;
-            Set<Item> C1 = new HashSet<>(items);
+            Set<Item> C1 = new HashSet<>(C);
             C1.removeAll(visited); //foreach on C breaks for g2 |ConcurrentModificationException|
             for (Item itm : C1) {
                 if(!visited.contains(itm)){
