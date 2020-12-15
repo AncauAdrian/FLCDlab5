@@ -1,0 +1,2 @@
+program'->(0)program assignstmt->(8)ID=CONST program->(1)main{declaration;stmt;} type->(3)type1 type1->(5)INTEGER|(4)BOOLEAN|(6)STRING declaration->(2)typeID stmt->(7)assignstmt 
+[1, 7, 8, 2, 3, 5]
